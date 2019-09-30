@@ -1,6 +1,6 @@
 local gserv = ... or _G.gserv
 
-gserv.AddGLua("discrod_cloudflare_workaround", [[
+gserv.AddGLua("discord_cloudflare_workaround", [[
     do
         _G.OLD_HTTP = _G.OLD_HTTP or _G.HTTP
         local active = {}
