@@ -1,4 +1,4 @@
-WIP
-
-clone https://gitlab.com/CapsAdmin/goluwa
-place the root of this directories inside goluwa
+`git clone https://gitlab.com/CapsAdmin/goluwa`
+`cd goluwa`
+`git clone https://github.com/PAC3-Server/gserv`
+`./goluwa tmux`
