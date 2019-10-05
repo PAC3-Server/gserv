@@ -84,90 +84,45 @@ local config = {
         "https://steamuserimages-a.akamaihd.net/ugc/925927727228359320/848A08D5DE11EF955FBE0045DACABAD19BE58124/",
     },
 	addons = {
-		wire_extras = {
-			type = "git",
-			url = "https://github.com/wiremod/wire-extras.git",
-		},
-		serverassets = {
-			type = "git",
-			url = "https://github.com/PAC3-Server/ServerAssets.git",
-		},
-		fprofiler = {
-			type = "git",
-			url = "https://github.com/PAC3-Server/FProfiler.git",
-		},
 		pac3 = {
 			type = "git",
 			branch = "develop",
 			url = "https://github.com/CapsAdmin/pac3.git",
-		},
-		garrysmod = {
-			type = "git",
-			url = "https://github.com/PAC3-Server/garrysmod.git",
-		},
-		vj_base = {
-			type = "git",
-			url = "https://github.com/PAC3-Server/VJ-Base.git",
-		},
-		fprofiler = {
-			type = "git",
-			url = "https://github.com/PAC3-Server/FProfiler.git",
-		},
-		workshop_addons = {
-			type = "git",
-			url = "https://github.com/PAC3-Server/workshop-addons.git",
-		},
-		gm_mediaplayer = {
-			type = "git",
-			url = "https://github.com/PAC3-Server/gm-mediaplayer.git",
-		},
-		sit_anywhere = {
-			type = "git",
-			url = "https://github.com/PAC3-Server/Sit-Anywhere.git",
-		},
-		notagain = {
-			type = "git",
-			url = "https://github.com/PAC3-Server/notagain.git",
-		},
-		epoe = {
-			type = "git",
-			url = "https://github.com/PAC3-Server/EPOE.git",
-		},
-		wire = {
-			type = "git",
-			url = "https://github.com/PAC3-Server/wire.git",
-		},
+        },
 
-		advdupe3 = {
-			type = "git",
-			url = "https://github.com/PAC3-Server/advdupe2.git",
-		},
-		gm_http_discordrelay = {
-			type = "git",
-			url = "https://github.com/PAC3-Server/gm-http-discordrelay.git",
-		},
+		wire_extras = "https://github.com/wiremod/wire-extras.git",
+		serverassets = "https://github.com/PAC3-Server/ServerAssets.git",
+		fprofiler = "https://github.com/PAC3-Server/FProfiler.git",
+		garrysmod = "https://github.com/PAC3-Server/garrysmod.git",
+		vj_base = "https://github.com/PAC3-Server/VJ-Base.git",
+		fprofiler = "https://github.com/PAC3-Server/FProfiler.git",
+		workshop_addons = "https://github.com/PAC3-Server/workshop-addons.git",
+		gm_mediaplayer = "https://github.com/PAC3-Server/gm-mediaplayer.git",
+		sit_anywhere = "https://github.com/PAC3-Server/Sit-Anywhere.git",
+		notagain = "https://github.com/PAC3-Server/notagain.git",
+		epoe = "https://github.com/PAC3-Server/EPOE.git",
+		wire = "https://github.com/PAC3-Server/wire.git",
+		advdupe3 = "https://github.com/PAC3-Server/advdupe2.git",
+		gm_http_discordrelay = "https://github.com/PAC3-Server/gm-http-discordrelay.git",
 
         -- workshop addons
-        gm_bluehills_test3 = {
-            type = "workshop",
-            url = "https://steamcommunity.com/sharedfiles/filedetails/?id=243902601",
-        },
-		sprops_workshop_edition = {
-			type = "workshop",
-			url = "https://steamcommunity.com/sharedfiles/filedetails/?id=173482196",
-		},
-		playable_piano_fork = {
-			type = "workshop",
-			url = "http://steamcommunity.com/sharedfiles/filedetails/?id=741857902&searchtext=Playable+Piano",
-		},
-		css_swep_pack = {
-			type = "workshop",
-			url = "580180253",
-		},
-		css_weapons_mk10_base = {
-			type = "workshop",
-			url = "108720350",
-		},
+        --maps
+        gm_bluehills_test3 = "https://steamcommunity.com/sharedfiles/filedetails/?id=243902601",
+        gm_bigcity = "https://steamcommunity.com/sharedfiles/filedetails/?id=105982362",
+        gm_excess_waters = "https://steamcommunity.com/sharedfiles/filedetails/?id=158910762",
+        gm_aquablocks = "https://steamcommunity.com/sharedfiles/filedetails/?id=154093078",
+        supersize_room = "https://steamcommunity.com/sharedfiles/filedetails/?id=104793138",
+
+		sprops_workshop_edition = "https://steamcommunity.com/sharedfiles/filedetails/?id=173482196",
+		playable_piano_fork = "http://steamcommunity.com/sharedfiles/filedetails/?id=741857902",
+		css_swep_pack = "https://steamcommunity.com/sharedfiles/filedetails/?id=580180253",
+		css_weapons_mk10_base = "https://steamcommunity.com/sharedfiles/filedetails/?id=108720350",
+        explosive_entities = "https://steamcommunity.com/sharedfiles/filedetails/?id=129638197",
+        wowozela = "https://steamcommunity.com/sharedfiles/filedetails/?id=108170491",
+        propeller_engine = "https://steamcommunity.com/sharedfiles/filedetails/?id=108168963",
+        vuvuzela = "https://steamcommunity.com/sharedfiles/filedetails/?id=109624491",
+        mediaplayer = "https://steamcommunity.com/sharedfiles/filedetails/?id=546392647",
+        precision_tool = "https://steamcommunity.com/sharedfiles/filedetails/?id=104482086",
 	},
 }
 
@@ -214,8 +169,17 @@ event.AddListener("GServStart", "gmod_webserver", function(id, gmod_dir, config)
 
     function GMOD_WEBSERVER:OnClientConnected(client)
         function client:OnReceiveChunk(str)
-            local url = str:match("GET %/(%S+) HTTP/1%.")
+            local url = str:match("^GET %/(%S+) HTTP/1%.")
             local ip, port = client.socket:get_name()
+
+            if not url then
+                llog("malformed packet from %s:%s", ip, port)
+                if #str < 100 then
+                    print(str)
+                end
+                self:Remove()
+                return
+            end
 
             if url ~= "favicon.ico" then
                 llog("%s:%s wants to request %s", ip, port, url)
@@ -375,7 +339,7 @@ else
         setup()
     end
 
-    gserv.Start(id)
+    gserv.Start(id, config)
 end
 
 

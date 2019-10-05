@@ -196,6 +196,8 @@ function gserv.InstallGMod(where)
 	return gserv.InstallGame("gmod dedicated server"):Then(function(dir, appid, full_name)
 		local location = gserv.GetSRCDSDirectory() .. "gserv/" .. where
 
+		fs.Remove(dir .. "garrysmod/sv.db")
+
 		if not fs.IsFile(location .. "/garrysmod/data/gserv/gserv_installed") then
 			llog("copying files from:")
 			logn("\t" .. dir)
@@ -221,8 +223,31 @@ function gserv.GetSetupServers()
 	return out
 end
 
+local function get_workshop_id(str)
+	if (str:find("steamcommunity", nil, true) and str:find("id=%d+")) or tonumber(str) then
+		return str:match("id=(%d+)") or str
+	end
+end
+
+function gserv.NormalizeAddonInfo(val)
+	local info = {}
+
+	if type(val) == "string" then
+		info.type = val:endswith(".git") and "git" or get_workshop_id(val) and "workshop"
+		info.url = val
+	end
+
+	if info.type == "workshop" then
+		info.id = get_workshop_id(info.url)
+	end
+
+	return info
+end
+
 function gserv.UpdateAddon(id, key, info)
 	local dir = gserv.GetSRCDSDirectory() .. "gserv/" .. id .. "/garrysmod/addons/" .. underscore(key) .. "/"
+
+	local info = gserv.NormalizeAddonInfo(info)
 
 	if info.type == "git" then
 		llog(id .. " - updating git repository addon " .. info.url)
@@ -237,13 +262,7 @@ function gserv.UpdateAddon(id, key, info)
 	elseif info.type == "workshop" then
 		llog(id .. " - updating workshop addon " .. info.url)
 
-		local workshop_id = info.url
-
-		if (workshop_id:find("steamcommunity", nil, true) and workshop_id:find("id=%d+")) or tonumber(workshop_id) then
-			workshop_id = workshop_id:match("id=(%d+)") or workshop_id
-		end
-
-		steam.DownloadWorkshop(workshop_id, function(path, workshop_info)
+		steam.DownloadWorkshop(info.id, function(path, workshop_info)
 			vfs.CopyRecursively(path, "os:" .. dir)
 			--fs.RemoveRecursively(dir)
 			llog(id .. " - done updating " .. info.url)
