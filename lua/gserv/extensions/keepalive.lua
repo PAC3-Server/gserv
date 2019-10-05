@@ -10,9 +10,11 @@ event.AddListener("GServStart", "gserv_keepalive", function(id, gmod_dir, config
     event.Timer("gserv_keepalive_" .. id, 1, 0, function()
         local time = fs.Read(gmod_dir .. "data/gserv/last_ping.txt")
 
-        if time then
+        if time and tonumber(time) then
             time = tonumber(time)
+
             local diff = os.difftime(os.time(), time)
+
             if diff > 1 then
                 llog(id .. " - server hasn't responded for more than " ..  diff .. " seconds")
                 if diff > 60 then
@@ -20,6 +22,7 @@ event.AddListener("GServStart", "gserv_keepalive", function(id, gmod_dir, config
                         gserv.Stop(id)
                     end
                     gserv.Start(id, config)
+                    fs.Remove(gmod_dir .. "data/gserv/last_ping.txt")
                 end
             end
         end
