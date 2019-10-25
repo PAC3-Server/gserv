@@ -110,7 +110,7 @@ local config = {
         gm_bluehills_test3 = "https://steamcommunity.com/sharedfiles/filedetails/?id=243902601",
         gm_bigcity = "https://steamcommunity.com/sharedfiles/filedetails/?id=105982362",
         gm_excess_waters = "https://steamcommunity.com/sharedfiles/filedetails/?id=158910762",
-        gm_aquablocks = "https://steamcommunity.com/sharedfiles/filedetails/?id=154093078",
+        ["gm_aquablocks!"] = "https://steamcommunity.com/sharedfiles/filedetails/?id=154093078",
         supersize_room = "https://steamcommunity.com/sharedfiles/filedetails/?id=104793138",
 
 		sprops_workshop_edition = "https://steamcommunity.com/sharedfiles/filedetails/?id=173482196",
