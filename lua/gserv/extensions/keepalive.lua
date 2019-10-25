@@ -6,9 +6,18 @@ gserv.AddGLua("keepalive", [[
     end)
 ]])
 
+local no_response
+
 event.AddListener("GServStart", "gserv_keepalive", function(id, gmod_dir, config)
     event.Timer("gserv_keepalive_" .. id, 1, 0, function()
         local time = fs.Read(gmod_dir .. "data/gserv/last_ping.txt")
+
+        if not time then
+            no_response = no_response or os.time()
+            time = no_response
+        else
+            no_response = nil
+        end
 
         if time and tonumber(time) then
             time = tonumber(time)
