@@ -8,16 +8,10 @@ gserv.AddGLua("workshop_content", [[
         addons[key] = val
     end
 
-    PrintTable(addons)
-
     local map = game.GetMap():lower()
 
-    print(map)
-
-	if map_content[map] then
-		for _, id in ipairs(map_content[map]) do
-			resource.AddWorkshop(id)
-		end
+	if addons[map] then
+        resource.AddWorkshop(addons[map])
 	end
 ]])
 

@@ -2,18 +2,42 @@ local gserv = ... or _G.gserv
 
 gserv.AddPreLoadedGLua("fastdl", [[
     if SERVER then
-        GSERV_RESOURCE_FILES = {}
         do
+            local extensions = {
+                vmt = {"vtf"},
+                mdl = {"vvd", "ani", "dx80.vtx", "dx90.vtx", "sw.vtx", "phy", "jpg"}
+            }
+
             local old = resource.AddFile
             function resource.AddFile(path, ...)
-                GSERV_RESOURCE_FILES[path] = "AddFile"
-                return old(path, ...)
+                path = path:lower()
+
+                do
+                    local path, ext = path:match("(.+/.-)%.(.+)")
+                    local name = path:match(".+/(.+)")
+                    if extensions[ext] then
+                        local dir = path:match("(.+/)")
+                        for k, v in pairs(file.Find(dir .. "*", "GAME")) do
+                            for _, ext2 in ipairs(extensions[ext]) do
+                                if v == name .. "." .. ext2 then
+                                    resource.AddSingleFile(dir .. v)
+                                end
+                            end
+                        end
+                    end
+                end
             end
         end
         do
+            GSERV_RESOURCE_FILES = {}
+            local done = {}
             local old = resource.AddSingleFile
             function resource.AddSingleFile(path, ...)
-                GSERV_RESOURCE_FILES[path] = "AddSingleFile"
+                path = path:lower()
+                if not done[path] then
+                    table.insert(GSERV_RESOURCE_FILES, path)
+                    done[path] = true
+                end
                 return old(path, ...)
             end
         end
@@ -21,35 +45,19 @@ gserv.AddPreLoadedGLua("fastdl", [[
 ]])
 
 gserv.AddGLua("fastdl", [[
-    local extensions = {
-        vmt = {"vtf"},
-        mdl = {"vvd", "ani", "dx80.vtx", "dx90.vtx", "sw.vtx", "phy", "jpg"}
-    }
-
     timer.Simple(0.01, function()
         local found = {}
 
-        for path, type in pairs(GSERV_RESOURCE_FILES) do
-            if type == "AddFile" then
-                local path, ext = path:match("(.+/.-)%.(.+)")
-                if extensions[ext] then
-                    for k, v in pairs(file.Find(path:match("(.+/)") .. "*", "GAME")) do
-                        for _, ext2 in ipairs(extensions[ext]) do
-                            if v:EndsWith("." .. ext2) then
-                                found[path .. "." .. ext2] = true
-                            end
-                            break
-                        end
-                    end
-                end
-            end
+        PrintTable(GSERV_RESOURCE_FILES)
+
+        for _, path in ipairs(GSERV_RESOURCE_FILES) do
             if file.Exists(path, "GAME") then
                 found[path] = true
             end
         end
 
         do
-            local path = "maps/" .. game.GetMap() .. ".bsp"
+            local path = "maps/" .. game.GetMap():lower() .. ".bsp"
 
             if file.Exists(path, "GAME") then
                 found[path] = true
@@ -57,7 +65,7 @@ gserv.AddGLua("fastdl", [[
         end
 
         do
-            local path = "maps/" .. game.GetMap() .. ".nav"
+            local path = "maps/" .. game.GetMap():lower() .. ".nav"
 
             if file.Exists(path, "GAME") then
                 found[path] = true
@@ -94,7 +102,7 @@ event.AddListener("GServStart", "gserv_fastdl", function(id, gmod_dir, config)
             for _, path in ipairs(paths) do
                 local ok = false
 
-                if fs.IsFile(path) then
+                if fs.IsFile(gmod_dir .. path) then
                     fastdl(path, path)
                     ok = true
                 end
