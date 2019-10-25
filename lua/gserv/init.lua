@@ -17,7 +17,7 @@ function gserv.RenderGLua()
 	]]
 
 	for k,v in pairs(gserv.glua) do
-		lua = "do --" .. k .. "\n" .. lua .. v .. "end\n"
+		lua = lua .. "do local ok, err = pcall(function() --" .. k .. "\n" .. v .. "end) if not ok then print('gserv extension "..k.." failed: ' .. err) end end\n"
 	end
 
 	return lua
