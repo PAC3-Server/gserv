@@ -1,16 +1,17 @@
 local gserv = ... or _G.gserv
 
 function gserv.WriteData(id, str)
-    local gmod_dir = gserv.GetSRCDSDirectory() .. "gserv/" .. id .. "/garrysmod/"
+    local path = gserv.GetSRCDSDirectory() .. "gserv/" .. id .. "/garrysmod/data/gserv/gserv2gmod.txt"
 
-	local prev = fs.Read(gmod_dir .. "data/gserv/gserv2gmod.txt") or ""
-	fs.Write(gmod_dir .. "data/gserv/gserv2gmod.txt", prev .. str .. "¥$£@DELIMITER@£$¥")
+	local prev = fs.Read(path) or ""
+	fs.Write(path, prev .. str .. "¥$£@DELIMITER@£$¥")
 end
 
 function gserv.ReadData(id)
-    local gmod_dir = gserv.GetSRCDSDirectory() .. "gserv/" .. id .. "/garrysmod/"
-	local data = fs.Read(gmod_dir .. "data/gserv/gmod2gserv.txt")
-	fs.Write(gmod_dir .. "data/gserv/gmod2gserv.txt", "")
+    local path = gserv.GetSRCDSDirectory() .. "gserv/" .. id .. "/garrysmod/data/gserv/gmod2gserv.txt"
+
+	local data = fs.Read(path)
+	fs.Write(path, "")
 
 	if data and data ~= "" then
 		for _, chunk in ipairs(data:split("¥$£@DELIMITER@£$¥")) do
@@ -26,9 +27,11 @@ gserv.AddGLua("messages", [[
         file.Append("gserv/gmod2gserv.txt", str .. "¥$£@DELIMITER@£$¥")
     end
 
+    local path = "gserv/gserv2gmod.txt"
+
     function gserv.ReadData()
-        local data = file.Read("gserv/gserv2gmod.txt", "DATA")
-        file.Write("gserv/gserv2gmod.txt", "")
+        local data = file.Read(path, "DATA")
+        file.Write(path, "")
 
         if data and data ~= "" then
             for _, chunk in ipairs(data:Split("¥$£@DELIMITER@£$¥")) do
@@ -42,8 +45,10 @@ gserv.AddGLua("messages", [[
     do
         local last_time
         hook.Add("Think", "gserv_read_data", function()
-            if file.Time("gserv/gserv2gmod.txt", "DATA") ~= last_time then
+            local time = file.Time("gserv/gserv2gmod.txt", "DATA")
+            if time ~= last_time then
                 gserv.ReadData()
+                last_time = time
             end
         end)
     end
