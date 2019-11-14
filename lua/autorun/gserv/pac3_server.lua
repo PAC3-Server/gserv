@@ -92,6 +92,7 @@ local config = {
 
 		wire_extras = "https://github.com/wiremod/wire-extras.git",
 		serverassets = "https://github.com/PAC3-Server/ServerAssets.git",
+		serverassets_ws = "https://steamcommunity.com/sharedfiles/filedetails/?id=879302614",
 		fprofiler = "https://github.com/PAC3-Server/FProfiler.git",
 		garrysmod = "https://github.com/PAC3-Server/garrysmod.git",
 		vj_base = "https://github.com/PAC3-Server/VJ-Base.git",
@@ -107,13 +108,19 @@ local config = {
 
         -- workshop addons
         --maps
+        gm_excess_construct = "https://steamcommunity.com/sharedfiles/filedetails/?id=174651081",
+        gm_excess_islands = "https://steamcommunity.com/sharedfiles/filedetails/?id=115250988",
         gm_bluehills_test3 = "https://steamcommunity.com/sharedfiles/filedetails/?id=243902601",
+        rp_chromeliner_v1 = "https://steamcommunity.com/sharedfiles/filedetails/?id=1898270711",
         gm_bigcity = "https://steamcommunity.com/sharedfiles/filedetails/?id=105982362",
         gm_excess_waters = "https://steamcommunity.com/sharedfiles/filedetails/?id=158910762",
         ["gm_aquablocks!"] = "https://steamcommunity.com/sharedfiles/filedetails/?id=154093078",
         supersize_room = "https://steamcommunity.com/sharedfiles/filedetails/?id=104793138",
+        rp_feudal = "https://steamcommunity.com/sharedfiles/filedetails/?id=1112581984",
 
-		sprops_workshop_edition = "https://steamcommunity.com/sharedfiles/filedetails/?id=173482196",
+        rt_camera = "https://steamcommunity.com/sharedfiles/filedetails/?id=106944414",
+
+        sprops_workshop_edition = "https://steamcommunity.com/sharedfiles/filedetails/?id=173482196",
 		playable_piano_fork = "http://steamcommunity.com/sharedfiles/filedetails/?id=741857902",
 		css_swep_pack = "https://steamcommunity.com/sharedfiles/filedetails/?id=580180253",
 		css_weapons_mk10_base = "https://steamcommunity.com/sharedfiles/filedetails/?id=108720350",
@@ -123,6 +130,8 @@ local config = {
         vuvuzela = "https://steamcommunity.com/sharedfiles/filedetails/?id=109624491",
         mediaplayer = "https://steamcommunity.com/sharedfiles/filedetails/?id=546392647",
         precision_tool = "https://steamcommunity.com/sharedfiles/filedetails/?id=104482086",
+
+        enhanced_thirdperson = "https://steamcommunity.com/sharedfiles/filedetails/?id=1385768768",
 	},
 }
 
