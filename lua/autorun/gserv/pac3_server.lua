@@ -263,7 +263,7 @@ end)
 
 local function setup()
     gserv.InstallGMod("gmod"):Then(function(location)
-        gserv.InstallGServ(location)
+        gserv.InstallGServ(location, config)
     	gserv.InstallGame("Counter-Strike: Source Dedicated Server")
     	gserv.InstallGame("Team Fortress 2")
 
