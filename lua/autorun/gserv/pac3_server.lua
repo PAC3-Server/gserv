@@ -3,7 +3,8 @@ local id = "gmod"
 local config = {
 	port = 27015,
 	webserver_port = 5000,
-	webhook_secret = "WEBHOOK_SECRET",
+	--webhook_port = 27020,
+	--webhook_secret = "WEBHOOK_SECRET",
 	workshop_authkey = "WORKSHOP_AUTHKEY",
 	cfg = {
 		sv_downloadurl = "\"http://threekelv.in:2080/downloadurl/\"",
@@ -141,13 +142,12 @@ event.AddListener("GservWebhook", "update_addons", function(id, tbl)
 	if tbl.repository and tbl.repository.html_url then
 		local url = tbl.repository.html_url .. ".git"
 
-		for key, info in pairs(config) do
-			if info.url == tbl.url then
-
-			gserv.UpdateAddon(id, key, info)
-			vfs.Write(gmod_dir .. "data/gserv/server_want_restart.txt", info.name)
-
-			return
+		for name, addon_url in pairs(config.addons) do
+			if url:lower() == addon_url:lower() then
+				llog(id .. " - received webhook to update " .. name .. " - " .. addon_url)
+				gserv.UpdateAddon(id, name, addon_url)
+				vfs.Write(gmod_dir .. "data/gserv/server_want_restart.txt", name)
+				return
 			end
 		end
 
@@ -166,7 +166,8 @@ event.AddListener("GServStart", "gmod_webserver", function(id, gmod_dir, config)
 		GMOD_WEBSERVER:Remove()
 	end
 
-	local server = sockets.TCPServer()
+	local server = sockets.HTTPServer()
+	server.debug = true
 	server:Host("*", config.webserver_port)
 	GMOD_WEBSERVER = server
 
@@ -176,88 +177,115 @@ event.AddListener("GServStart", "gmod_webserver", function(id, gmod_dir, config)
 		client:Send(table.concat(header, "\r\n").."\r\n\r\n" .. body)
 	end
 
-	function GMOD_WEBSERVER:OnClientConnected(client)
-		function client:OnReceiveChunk(str)
-			local url = str:match("^GET %/(%S+) HTTP/1%.")
-			local ip, port = client.socket:get_name()
+	local allowed = {
+		webhook = true,
+		loadingscreen = true,
+		downloadurl = true
+	}
 
-			if not url then
-				llog("malformed packet from %s:%s", ip, port)
-				if #str < 100 then
-					print(str)
-				end
-				self:Remove()
-				return
-			end
+	local function client_path(client)
+		local path = client.http.path:sub(2)
+		if path:endswith("/") then
+			path = path:sub(1, -2)
+		end
 
-			if url ~= "favicon.ico" then
-				llog("%s:%s wants to request %s", ip, port, url)
-			end
+		return path
+	end
 
-			if url:startswith("downloadurl/") then
-				url = url:sub(#"downloadurl/" + 1)
+	function GMOD_WEBSERVER:OnReceiveResponse(client, method, path)
+		local path = client_path(client)
 
-				if fs.IsFile(gmod_dir .. "fastdl/" .. url) then
-					GMOD_WEBSERVER:Reply(client, {
-					"HTTP/1.1 200 OK",
-					"Connection: keep-alive",
-					}, fs.Read(gmod_dir .. "fastdl/" .. url))
-				else
-					llog("%s:%s unable to find %s", ip, port, "fastdl/" .. url)
+		if not allowed[path] then
+			self:Reply(client, {
+				"HTTP/1.1 404 Not found",
+			})
+			return false
+		end
+	end
 
-					GMOD_WEBSERVER:Reply(client, {
-					"HTTP/1.1 404 Not Found",
-					"Connection: close",
-					})
-				end
-			elseif url:startswith("loadingscreen") and config.screenshots then
+	local secret = os.getenv("WEBHOOK_SECRET")
+
+	function GMOD_WEBSERVER:OnReceiveBody(client)
+		local path = client_path(client)
+
+		if path == "webhook" then
+			local tbl = sockets.HandleWebhookRequest(
+				client,
+				client.http.body,
+				client.http.header["content-type"],
+				secret,
+				client.http.header["x-hub-signature"]
+			)
+			event.Call("GservWebhook", "gmod", tbl, client)
+		end
+	end
+
+	function GMOD_WEBSERVER:OnReceiveHeader(client, headers)
+		local path = client_path(client)
+
+		if path == "downloadurl" then
+			url = url:sub(#"downloadurl/" + 1)
+
+			if fs.IsFile(gmod_dir .. "fastdl/" .. url) then
 				GMOD_WEBSERVER:Reply(client, {
-					"HTTP/1.1 200 OK",
-					"Connection: close",
-					"Content-Type: text/html",
-				}, [[
-					<!DOCTYPE html>
-					<html>
-					<style>
-					body {
-						background-color: black;
-						background-size: cover;
-						overflow: hidden;
-						transition: background 1s ease-in 200ms;
-					}
-					</style>
-					<script>
-					let urls = [
-						]]..(function() local str = {}
-						for i,v in ipairs(config.screenshots) do
-							table.insert(str, "\"" .. v .. "\"")
-						end
-						return table.concat(str, ",\n")
-						end)()..[[
-					]
+				"HTTP/1.1 200 OK",
+				"Connection: keep-alive",
+				}, fs.Read(gmod_dir .. "fastdl/" .. url))
+			else
+				llog("%s:%s unable to find %s", ip, port, "fastdl/" .. url)
 
-					let cb = () => {
-						let i = Math.floor(Math.random() * urls.length);
-						document.getElementsByTagName("body")[0].style.backgroundImage = "url(" + urls[i] + ")"
-					}
-					setInterval(cb, 5000)
-					cb()
-					</script>
-
-					<head></head>
-					<body></body>
-
-					</html>
-				]])
+				GMOD_WEBSERVER:Reply(client, {
+				"HTTP/1.1 404 Not Found",
+				"Connection: close",
+				})
 			end
+		elseif path == "loadingscreen" and config.screenshots then
+			GMOD_WEBSERVER:Reply(client, {
+				"HTTP/1.1 200 OK",
+				"Connection: close",
+				"Content-Type: text/html",
+			}, [[
+				<!DOCTYPE html>
+				<html>
+				<style>
+				body {
+					background-color: black;
+					background-size: cover;
+					overflow: hidden;
+					transition: background 1s ease-in 200ms;
+				}
+				</style>
+				<script>
+				let urls = [
+					]]..(function() local str = {}
+					for i,v in ipairs(config.screenshots) do
+						table.insert(str, "\"" .. v .. "\"")
+					end
+					return table.concat(str, ",\n")
+					end)()..[[
+				]
+
+				let cb = () => {
+					let i = Math.floor(Math.random() * urls.length);
+					document.getElementsByTagName("body")[0].style.backgroundImage = "url(" + urls[i] + ")"
+				}
+				setInterval(cb, 5000)
+				cb()
+				</script>
+
+				<head></head>
+				<body></body>
+
+				</html>
+			]])
 		end
 	end
 end)
 
 event.AddListener("GServStop", "gmod_webserver", function(id, gmod_dir)
 	if GMOD_WEBSERVER then
-	GMOD_WEBSERVER:Remove()
-	GMOD_WEBSERVER = nil
+		GMOD_WEBSERVER:Remove()
+		GMOD_WEBSERVER = nil
 	end
 end)
 
