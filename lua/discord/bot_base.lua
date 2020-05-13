@@ -83,7 +83,6 @@ end
 
 function META:Initialize()
 	self.api.GET("gateway/bot"):Then(function(data)
-
 		local socket = self:CreateWebsocket({
 			[0] = "Dispatch", -- dispatches an event
 			[1] = "Heartbeat", -- used for ping checking
@@ -135,7 +134,9 @@ function META:OnClose(reason)
 end
 
 function META:OnRemove()
-	self.socket:Remove()
+	if self.socket then
+		self.socket:Remove()
+	end
 end
 
 META:Register()

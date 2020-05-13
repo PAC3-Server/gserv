@@ -103,7 +103,6 @@ local config = {
 		epoe = "https://github.com/Metastruct/EPOE.git",
 		wire = "https://github.com/wiremod/wire.git",
 		advdupe3 = "https://github.com/wiremod/advdupe2.git",
-		serverassets_ws = "https://steamcommunity.com/sharedfiles/filedetails/?id=879302614",
 
 		-- workshop addons
 		--maps
@@ -159,7 +158,7 @@ local config = {
 		unbreakable_tool = "https://steamcommunity.com/sharedfiles/filedetails/?id=111158387",
 		weight_stool = "https://steamcommunity.com/sharedfiles/filedetails/?id=104480013",
 		more_materials_stool = "https://steamcommunity.com/sharedfiles/filedetails/?id=105841291",
-		improved_stacker = "https://steamcommunity.com/sharedfiles/filedetails/?id=264467687",
+		improved_stacker = "https://github.com/Mista-Tea/improved-stacker.git",
 
 	},
 }
@@ -222,6 +221,8 @@ event.AddListener("GServStart", "gmod_webserver", function(id, gmod_dir, config)
 		return path
 	end
 
+	local last
+
 	function GMOD_WEBSERVER:OnReceiveResponse(client, method, path)
 		local path = client_path(client)
 
@@ -258,15 +259,15 @@ event.AddListener("GServStart", "gmod_webserver", function(id, gmod_dir, config)
 
 			if fs.IsFile(gmod_dir .. "fastdl/" .. url) then
 				GMOD_WEBSERVER:Reply(client, {
-				"HTTP/1.1 200 OK",
-				"Connection: keep-alive",
+					"HTTP/1.1 200 OK",
+					"Connection: keep-alive",
 				}, fs.Read(gmod_dir .. "fastdl/" .. url))
 			else
 				llog("%s:%s unable to find %s", ip, port, "fastdl/" .. url)
 
 				GMOD_WEBSERVER:Reply(client, {
-				"HTTP/1.1 404 Not Found",
-				"Connection: close",
+					"HTTP/1.1 404 Not Found",
+					"Connection: close",
 				})
 			end
 		elseif path == "loadingscreen" and config.screenshots then
@@ -320,10 +321,10 @@ event.AddListener("GServStop", "gmod_webserver", function(id, gmod_dir)
 end)
 
 local function setup()
-	gserv.InstallGMod("gmod"):Then(function(location)
+	gserv.InstallGMod(id):Then(function(location)
 		gserv.InstallGServ(location, config)
-		gserv.InstallGame("Counter-Strike: Source Dedicated Server")
-		gserv.InstallGame("Team Fortress 2 Dedicated Server")
+		--gserv.InstallGame("Counter-Strike: Source Dedicated Server")
+		--gserv.InstallGame("Team Fortress 2 Dedicated Server")
 
 		for key, info in pairs(config.addons) do
 			gserv.UpdateAddon(id, key, info)
@@ -363,19 +364,30 @@ commands.Add(id .. " list_addons", function()
 	local remaining = {}
 
 	for key, info in pairs(config.addons) do
-		remaining[gserv.UnderscoreFileName(key)] = {info = info, name = key}
+		remaining[gserv.UnderscoreFileName(key)] = {info = gserv.NormalizeAddonInfo(info), name = key}
 	end
+
+	-- discord
+	log("__DISCORD_MESSAGE__")
 
 	for _, name in ipairs(gserv.GetActiveAddons(id)) do
 		local info = remaining[name]
 		if info then
-			logn(info.name)
+			if info.info.type == "workshop" then
+				logn(info.name, " - ", "<https://steamcommunity.com/sharedfiles/filedetails/?id=" .. info.info.id .. ">" )
+			elseif info.info.type == "git" then
+				logn(info.name, " - ", "<" .. info.info.url .. ">")
+			end
 			remaining[name] = nil
 		end
 	end
 
 	for name, info in pairs(remaining) do
-		logn(info.name .. " not installed")
+		if info.info.type == "workshop" then
+			logn(info.name, " - ", "<https://steamcommunity.com/sharedfiles/filedetails/?id=" .. info.info.id .. ">", " ** NOT INSTALLED ** ")
+		elseif info.info.type == "git" then
+			logn(info.name, " - ", "<" .. info.info.url .. ">", " ** NOT INSTALLED ** ")
+		end
 	end
 end)
 
@@ -427,20 +439,22 @@ commands.Add(id .. " show", function()
 	gserv.Attach(id)
 end)
 
+
 logn("starting " .. id)
 
 local gmod_dir = gserv.GetSRCDSDirectory() .. "gserv/" .. id .. "/"
-gserv.InstallGServ(gmod_dir, config)
-
-remove_unknown_addons()
 
 if gserv.IsRunning(id) then
+	gserv.InstallGServ(gmod_dir, config)
 	gserv.Resume(id, config)
 	return
 else
-	if not table.hasvalue(gserv.GetSetupServers(), "gmod") then
+	if not gserv.IsInstalled(4000) then
 		setup()
 	end
 
+	remove_unknown_addons()
+
+	gserv.InstallGServ(gmod_dir, config)
 	gserv.Start(id, config)
 end

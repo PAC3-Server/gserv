@@ -95,7 +95,7 @@ function gserv.InstallGame(name, username)
 		quit = true,
 		validate = true,
 	}):Then(function()
-		return callback.Resolve(install_dir .. "/", appid, full_name)
+		return callback.Resolve(install_dir, appid, full_name)
 	end)
 end
 
@@ -126,6 +126,15 @@ function gserv.GetInstalledSourceGames()
 	end
 
 	return installed
+end
+
+function gserv.IsInstalled(appid)
+	for k,v in pairs(gserv.GetInstalledSourceGames()) do
+		if v.appid == appid then
+			return true
+		end
+	end
+	return false
 end
 
 function gserv.Reload()
@@ -213,7 +222,6 @@ function gserv.InstallGMod(where)
 			logn("\t" .. dir)
 			logn("\tto")
 			logn("\t" .. location)
-			assert(fs.CreateDirectory(location, true))
 			assert(fs.CopyRecursively(dir, location))
 			fs.Write(location .. "/garrysmod/data/gserv/gserv_installed", "", true)
 		end
@@ -301,11 +309,13 @@ function gserv.UpdateAddon(id, key, info)
 	elseif info.type == "workshop" then
 		llog(id .. " - updating workshop addon " .. info.url)
 
+		local stat = fs.GetAttributes(dir)
+
 		steam.DownloadWorkshop(info.id, function(path, workshop_info)
 			vfs.CopyRecursively(path, "os:" .. dir)
 			--fs.RemoveRecursively(dir)
 			llog(id .. " - done updating " .. info.url)
-		end)
+		end, nil, stat and stat.last_modified or nil)
 	end
 end
 

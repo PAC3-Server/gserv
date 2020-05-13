@@ -1,4 +1,3 @@
-
 if not DISCORD_BOT then
 	--DISCORD_BOT:Remove()
 	DISCORD_BOT = DiscordBot(assert(vfs.Read("temp/discord_bot_token"):trim()))
@@ -151,8 +150,37 @@ local ffi = require("ffi")
 local freeimage = require("freeimage")
 
 function DISCORD_BOT:Say2(channel, msg)
-    for i, chunk in ipairs(msg:lengthsplit(1950)) do
-        event.Delay(i-1, function() self:Say(channel, "```lua\n"..chunk.."\n```") end)
+	local discord_message = msg:startswith("__DISCORD_MESSAGE__")
+	if discord_message then
+		msg = msg:sub(#"__DISCORD_MESSAGE__" + 1)
+	end
+
+	local i = 0
+
+	local function send(str)
+		event.Delay(i, function()
+			if discord_message then
+				print(i.."|"..str .. "|")
+				self:Say(channel, str)
+			else
+				self:Say(channel, "```lua\n"..str.."\n```")
+			end
+		end)
+	end
+
+	local chunk = ""
+	for _, line in ipairs(msg:split("\n")) do
+		if #chunk > 1950 then
+			send(chunk)
+			chunk = ""
+			i = i + 1
+		else
+			chunk = chunk .. line .. "\n"
+		end
+	end
+
+	if chunk ~= "" then
+		send(chunk)
 	end
 end
 
@@ -202,10 +230,11 @@ function DISCORD_BOT:Say(channel, what)
 		body = {
 			content = what:sub(0, 1999),
 		},
-	}):Then(print)
+	}):Then(function() end)
 end
 
 function DISCORD_BOT:OnEvent(data)
+
 	if data.t == "VOICE_SERVER_UPDATE" then
 		self.voice_server = data
 	elseif data.t == "VOICE_STATE_UPDATE" then
@@ -286,7 +315,7 @@ function DISCORD_BOT:OnEvent(data)
 				if data.opcode == "SessionDescription" then
 					self.secret_key = data.d.secret_key
 
-					start_voicechat(self)
+					--start_voicechat(self)
 					bot:Say(chatsounds_channel, "win2000 startup")
 				end
 			end
@@ -294,7 +323,6 @@ function DISCORD_BOT:OnEvent(data)
 	end
 
 	if data.t == "READY" then
-
 		--self.api.GET("guilds/"..server_id.."/roles"):Then(table.print)
 
 		--[[self.api.POST("channels/260911858133762048/messages", {
@@ -337,15 +365,19 @@ function DISCORD_BOT:OnEvent(data)
 
                 if data.d.member and table.hasvalue(data.d.member.roles, ADMIN_ROLE) and data.d.content:startswith("!") then
 
-                    event.AddListener("ReplPrint", "capture", function(str)
-                        self:Say2(data.d.channel_id, str)
-                    end)
+					do
+						local captured = ""
+						event.AddListener("ReplPrint", "capture", function(str)
+							captured = captured .. str
+						end)
 
-                    event.Delay(function()
-                        event.RemoveListener("ReplPrint", "capture")
-                    end)
+						commands.RunString(data.d.content)
 
-                    commands.RunString(data.d.content)
+						event.Delay(0, function()
+							self:Say2(data.d.channel_id, captured)
+							event.RemoveListener("ReplPrint", "capture")
+						end)
+					end
 
                     do return end
 
@@ -405,7 +437,6 @@ function DISCORD_BOT:OnEvent(data)
 		--table.print(data)
 	end
 end
-
 
 function DISCORD_BOT:OnClose(reason)
     llog(reason)
