@@ -41,6 +41,8 @@ local function underscore(str)
 	return str:lower():gsub("%p", ""):gsub("%s+", "_")
 end
 
+gserv.UnderscoreFileName = underscore
+
 function gserv.GetSRCDSDirectory()
     return e.SHARED_FOLDER .. "srcds2/"
 end
@@ -102,15 +104,23 @@ function gserv.GetInstalledSourceGames()
 
 	local srcds_dir = gserv.GetSRCDSDirectory()
 	for _, dir in ipairs(vfs.Find(srcds_dir .. "installed/", true)) do
-		local manifest_path = vfs.Find(dir .. "/steamapps/appmanifest_", true)[1]
-		if manifest_path then
-			local tbl = utility.VDFToTable(vfs.Read(manifest_path))
-			if tbl and tbl.AppState then
-				table.insert(installed, {
-					name = tbl.AppState.name,
-					appid = tbl.AppState.appid,
-					directory = dir .. "/",
-				})
+
+		local done = {}
+		for _, path in ipairs(vfs.Find(dir .. "/", true)) do
+			local gameinfo_path = path .. "/gameinfo.txt"
+			if vfs.IsFile(gameinfo_path) then
+				local game_info = utility.VDFToTable(vfs.Read(gameinfo_path), true)
+				game_info = game_info.gameinfo
+
+				if game_info and not done[game_info.filesystem.steamappid] then
+					table.insert(installed, {
+						name = game_info.game,
+						appid = game_info.filesystem.steamappid,
+						short_name = game_info.filesystem.searchpaths.game_write,
+						directory = path .. "/",
+					})
+					done[game_info.filesystem.steamappid] = true
+				end
 			end
 		end
 	end
@@ -155,9 +165,9 @@ do
 		mounts_cfg = mounts_cfg .. "{\n"
 
 		for _, data in pairs(gserv.GetInstalledSourceGames()) do
-			if data.appid ~= 4020 then
-				local name = data.directory:match(".+/(.+)")
-				mounts_cfg = mounts_cfg .. "\t\"" .. name .. "\"\t\t" .. "\""..data.directory.."\"\n"
+			if data.appid ~= 4000 and data.appid ~= 4020 then
+				local name = data.short_name
+				mounts_cfg = mounts_cfg .. "\t\"" .. name .. "\"\t\t" .. "\""..data.directory:sub(1, -2).."\"\n"
 				mountdepots_txt = mountdepots_txt .. "\t\"" .. name .. "\"\t\"1\"\n"
 			end
 		end
@@ -233,15 +243,44 @@ function gserv.NormalizeAddonInfo(val)
 	local info = {}
 
 	if type(val) == "string" then
-		info.type = val:endswith(".git") and "git" or get_workshop_id(val) and "workshop"
-		info.url = val
-	end
+		if val:endswith(".git") then
+			info.type = "git"
+		else
+			info.type = "workshop"
+			info.id = get_workshop_id(val)
+		end
 
-	if info.type == "workshop" then
-		info.id = get_workshop_id(info.url)
+		if not info.type then
+			error("unknown addon info: " .. val)
+		end
+
+		info.url = val
+	elseif type(info) == "table" then
+
+		for k, v in pairs(val) do
+			info[k] = v
+		end
+
+		if info.type == "workshop" then
+			info.id = get_workshop_id(info.url)
+		end
 	end
 
 	return info
+end
+
+function gserv.GetActiveAddons(id)
+	local dir = gserv.GetSRCDSDirectory() .. "gserv/" .. id .. "/garrysmod/addons/"
+
+	local out = {}
+
+	for i, name in ipairs(vfs.Find(dir)) do
+		if vfs.IsDirectory(dir .. name) then
+			table.insert(out, name)
+		end
+	end
+
+	return out
 end
 
 function gserv.UpdateAddon(id, key, info)

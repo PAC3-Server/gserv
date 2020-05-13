@@ -90,22 +90,20 @@ local config = {
 			branch = "develop",
 			url = "https://github.com/CapsAdmin/pac3.git",
 		},
-
-		wire_extras = "https://github.com/wiremod/wire-extras.git",
 		serverassets = "https://github.com/PAC3-Server/ServerAssets.git",
-		serverassets_ws = "https://steamcommunity.com/sharedfiles/filedetails/?id=879302614",
-		fprofiler = "https://github.com/PAC3-Server/FProfiler.git",
-		garrysmod = "https://github.com/PAC3-Server/garrysmod.git",
-		vj_base = "https://github.com/PAC3-Server/VJ-Base.git",
-		fprofiler = "https://github.com/PAC3-Server/FProfiler.git",
 		workshop_addons = "https://github.com/PAC3-Server/workshop-addons.git",
-		gm_mediaplayer = "https://github.com/PAC3-Server/gm-mediaplayer.git",
-		sit_anywhere = "https://github.com/PAC3-Server/Sit-Anywhere.git",
+		garrysmod = "https://github.com/PAC3-Server/garrysmod.git",
 		notagain = "https://github.com/PAC3-Server/notagain.git",
-		epoe = "https://github.com/PAC3-Server/EPOE.git",
-		wire = "https://github.com/PAC3-Server/wire.git",
-		advdupe3 = "https://github.com/PAC3-Server/advdupe2.git",
 		gm_http_discordrelay = "https://github.com/PAC3-Server/gm-http-discordrelay.git",
+
+		gm_mediaplayer = "https://github.com/samuelmaddock/gm-mediaplayer.git",
+		wire_extras = "https://github.com/wiremod/wire-extras.git",
+		vj_base = "https://github.com/DrVrej/VJ-Base.git",
+		sit_anywhere = "https://github.com/Xerasin/Sit-Anywhere.git",
+		epoe = "https://github.com/Metastruct/EPOE.git",
+		wire = "https://github.com/wiremod/wire.git",
+		advdupe3 = "https://github.com/wiremod/advdupe2.git",
+		serverassets_ws = "https://steamcommunity.com/sharedfiles/filedetails/?id=879302614",
 
 		-- workshop addons
 		--maps
@@ -123,8 +121,8 @@ local config = {
 
 		sprops_workshop_edition = "https://steamcommunity.com/sharedfiles/filedetails/?id=173482196",
 		playable_piano_fork = "http://steamcommunity.com/sharedfiles/filedetails/?id=741857902",
-		css_swep_pack = "https://steamcommunity.com/sharedfiles/filedetails/?id=580180253",
-		css_weapons_mk10_base = "https://steamcommunity.com/sharedfiles/filedetails/?id=108720350",
+
+
 		explosive_entities = "https://steamcommunity.com/sharedfiles/filedetails/?id=129638197",
 		wowozela = "https://steamcommunity.com/sharedfiles/filedetails/?id=108170491",
 		propeller_engine = "https://steamcommunity.com/sharedfiles/filedetails/?id=108168963",
@@ -132,7 +130,37 @@ local config = {
 		mediaplayer = "https://steamcommunity.com/sharedfiles/filedetails/?id=546392647",
 		precision_tool = "https://steamcommunity.com/sharedfiles/filedetails/?id=104482086",
 
-		enhanced_thirdperson = "https://steamcommunity.com/sharedfiles/filedetails/?id=1385768768",
+		toybox_classics = "https://steamcommunity.com/sharedfiles/filedetails/?id=1550747990",
+		css_swep_pack = "https://steamcommunity.com/sharedfiles/filedetails/?id=108720350",
+		admin_gun = "https://steamcommunity.com/sharedfiles/filedetails/?id=576866065",
+
+		physical_parent = "https://steamcommunity.com/sharedfiles/filedetails/?id=1328566021",
+		epms = "http://steamcommunity.com/sharedfiles/filedetails/?id=504945881",
+		smart_freezer = "http://steamcommunity.com/sharedfiles/filedetails/?id=107388767",
+		improved_polyweld = "http://steamcommunity.com/sharedfiles/filedetails/?id=344795193",
+		total_mass_tool = "http://steamcommunity.com/sharedfiles/filedetails/?id=129425927",
+		smart_painter = "http://steamcommunity.com/sharedfiles/filedetails/?id=126566296",
+		fin = "http://steamcommunity.com/sharedfiles/filedetails/?id=165509582",
+		wing = "http://steamcommunity.com/sharedfiles/filedetails/?id=117908563",
+		seat_weaponizer = "https://steamcommunity.com/sharedfiles/filedetails/?id=601411453",
+		damage_in_seats = "https://steamcommunity.com/sharedfiles/filedetails/?id=428278317",
+		unbreakable_tool = "https://steamcommunity.com/sharedfiles/filedetails/?id=111158387",
+		smartsnap = "https://steamcommunity.com/sharedfiles/filedetails/?id=104815552",
+		multi_parent_tool = "https://steamcommunity.com/sharedfiles/filedetails/?id=111929524",
+		gesture_menu_commands = "https://steamcommunity.com/sharedfiles/filedetails/?id=145939873",
+		precision_alignment = "https://steamcommunity.com/sharedfiles/filedetails/?id=457478322",
+		smart_weld = "https://steamcommunity.com/sharedfiles/filedetails/?id=131586620",
+		official_precision_tool = "https://steamcommunity.com/sharedfiles/filedetails/?id=104482086",
+		make_spherical = "https://steamcommunity.com/sharedfiles/filedetails/?id=136318146",
+		sub_material_tool = "https://steamcommunity.com/sharedfiles/filedetails/?id=405793043",
+		smartnsap = "https://steamcommunity.com/sharedfiles/filedetails/?id=104815552",
+		nocollide_everything = "https://steamcommunity.com/sharedfiles/filedetails/?id=105955548",
+		doors = "https://steamcommunity.com/sharedfiles/filedetails/?id=499280258",
+		unbreakable_tool = "https://steamcommunity.com/sharedfiles/filedetails/?id=111158387",
+		weight_stool = "https://steamcommunity.com/sharedfiles/filedetails/?id=104480013",
+		more_materials_stool = "https://steamcommunity.com/sharedfiles/filedetails/?id=105841291",
+		improved_stacker = "https://steamcommunity.com/sharedfiles/filedetails/?id=264467687",
+
 	},
 }
 
@@ -142,10 +170,12 @@ event.AddListener("GservWebhook", "update_addons", function(id, tbl)
 	if tbl.repository and tbl.repository.html_url then
 		local url = tbl.repository.html_url .. ".git"
 
-		for name, addon_url in pairs(config.addons) do
+		for name, info in pairs(config.addons) do
+			local addon_url = type(info) == "table" and info.url or info
+
 			if url:lower() == addon_url:lower() then
 				llog(id .. " - received webhook to update " .. name .. " - " .. addon_url)
-				gserv.UpdateAddon(id, name, addon_url)
+				gserv.UpdateAddon(id, name, info)
 				vfs.Write(gmod_dir .. "data/gserv/server_want_restart.txt", name)
 				return
 			end
@@ -293,12 +323,26 @@ local function setup()
 	gserv.InstallGMod("gmod"):Then(function(location)
 		gserv.InstallGServ(location, config)
 		gserv.InstallGame("Counter-Strike: Source Dedicated Server")
-		gserv.InstallGame("Team Fortress 2")
+		gserv.InstallGame("Team Fortress 2 Dedicated Server")
 
 		for key, info in pairs(config.addons) do
 			gserv.UpdateAddon(id, key, info)
 		end
 	end)
+end
+
+local function remove_unknown_addons()
+	local temp = {gserv = true}
+	for k,v in pairs(config.addons) do
+		temp[gserv.UnderscoreFileName(k)] = true
+	end
+
+	for _, name in ipairs(gserv.GetActiveAddons(id)) do
+		if not temp[name] then
+			logn("removing unknown addon " .. name)
+			fs.RemoveRecursively(gserv.GetSRCDSDirectory() .. "gserv/" .. id .. "/garrysmod/addons/" .. name)
+		end
+	end
 end
 
 commands.Add(id .. " update_addons", function()
@@ -313,6 +357,26 @@ end)
 
 commands.Add(id .. " update", function()
 	setup()
+end)
+
+commands.Add(id .. " list_addons", function()
+	local remaining = {}
+
+	for key, info in pairs(config.addons) do
+		remaining[gserv.UnderscoreFileName(key)] = {info = info, name = key}
+	end
+
+	for _, name in ipairs(gserv.GetActiveAddons(id)) do
+		local info = remaining[name]
+		if info then
+			logn(info.name)
+			remaining[name] = nil
+		end
+	end
+
+	for name, info in pairs(remaining) do
+		logn(info.name .. " not installed")
+	end
 end)
 
 commands.Add(id .. " start", function()
@@ -367,6 +431,8 @@ logn("starting " .. id)
 
 local gmod_dir = gserv.GetSRCDSDirectory() .. "gserv/" .. id .. "/"
 gserv.InstallGServ(gmod_dir, config)
+
+remove_unknown_addons()
 
 if gserv.IsRunning(id) then
 	gserv.Resume(id, config)
