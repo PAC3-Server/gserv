@@ -67,9 +67,10 @@ function META:CreateWebsocket(opcodes, friendly_name, on_close)
 		self:OnEvent(data)
     end
 
-	function socket.OnClose(reason, code)
-		event.RemoveTimer(socket)
-        socket:Remove()
+	function socket:OnClose(reason, code)
+		event.RemoveTimer(tostring(self)
+	)
+        self:Remove()
 
         if on_close then
             on_close(string.format("closing discord socket: %s (%s)\n", reason, code))

@@ -1,5 +1,6 @@
 if not DISCORD_BOT then
 	--DISCORD_BOT:Remove()
+	logn("starting discord bot")
 	DISCORD_BOT = DiscordBot(assert(vfs.Read("temp/discord_bot_token"):trim()))
 end
 
@@ -160,7 +161,6 @@ function DISCORD_BOT:Say2(channel, msg)
 	local function send(str)
 		event.Delay(i, function()
 			if discord_message then
-				print(i.."|"..str .. "|")
 				self:Say(channel, str)
 			else
 				self:Say(channel, "```lua\n"..str.."\n```")
