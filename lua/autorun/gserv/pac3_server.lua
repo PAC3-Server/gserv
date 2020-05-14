@@ -224,7 +224,7 @@ event.AddListener("GServStart", "gmod_webserver", function(id, gmod_dir, config)
 	local last
 
 	function GMOD_WEBSERVER:OnReceiveResponse(client, method, path)
-		local path = client_path(client)
+		local path = client_path(client):split("/")[1]
 
 		if not allowed[path] then
 			self:Reply(client, {
@@ -254,8 +254,8 @@ event.AddListener("GServStart", "gmod_webserver", function(id, gmod_dir, config)
 	function GMOD_WEBSERVER:OnReceiveHeader(client, headers)
 		local path = client_path(client)
 
-		if path == "downloadurl" then
-			url = url:sub(#"downloadurl/" + 1)
+		if path:startswith("downloadurl") then
+			local url = path:sub(#"downloadurl/" + 1)
 
 			if fs.IsFile(gmod_dir .. "fastdl/" .. url) then
 				GMOD_WEBSERVER:Reply(client, {
