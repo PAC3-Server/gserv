@@ -159,7 +159,7 @@ local config = {
 		weight_stool = "https://steamcommunity.com/sharedfiles/filedetails/?id=104480013",
 		more_materials_stool = "https://steamcommunity.com/sharedfiles/filedetails/?id=105841291",
 		improved_stacker = "https://github.com/Mista-Tea/improved-stacker.git",
-
+		ragdoll_mover = "https://steamcommunity.com/sharedfiles/filedetails/?id=104575630",
 	},
 }
 
