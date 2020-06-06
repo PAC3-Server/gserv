@@ -129,9 +129,7 @@ local config = {
 		mediaplayer = "https://steamcommunity.com/sharedfiles/filedetails/?id=546392647",
 		precision_tool = "https://steamcommunity.com/sharedfiles/filedetails/?id=104482086",
 
-		toybox_classics = "https://steamcommunity.com/sharedfiles/filedetails/?id=1550747990",
 		css_swep_pack = "https://steamcommunity.com/sharedfiles/filedetails/?id=108720350",
-		admin_gun = "https://steamcommunity.com/sharedfiles/filedetails/?id=576866065",
 
 		physical_parent = "https://steamcommunity.com/sharedfiles/filedetails/?id=1328566021",
 		epms = "http://steamcommunity.com/sharedfiles/filedetails/?id=504945881",
