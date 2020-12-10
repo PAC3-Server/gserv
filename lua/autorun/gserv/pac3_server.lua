@@ -103,6 +103,8 @@ local config = {
 		epoe = "https://github.com/Metastruct/EPOE.git",
 		wire = "https://github.com/wiremod/wire.git",
 		advdupe3 = "https://github.com/wiremod/advdupe2.git",
+		
+		gmodvr = "https://steamcommunity.com/sharedfiles/filedetails/?id=1678408548",
 
 		-- workshop addons
 		--maps
