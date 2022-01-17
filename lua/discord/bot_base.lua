@@ -38,6 +38,7 @@ function META:CreateWebsocket(opcodes, friendly_name, on_close)
 	end
 
 	function socket:OnReceive(message, err, partial)
+		message = message:trim()
 		local data = serializer.Decode("json", message)
 
 		data.opcode = opcode2name[data.op]
@@ -118,7 +119,9 @@ function META:Initialize()
 		})
 
 		function socket.OnEvent(_, data)
-			self:OnEvent(data)
+			if self.OnEvent then
+				self:OnEvent(data)
+			end
 		end
 	end):Catch(function(reason, code)
 		self:OnClose(reason, code or -1)

@@ -57,7 +57,8 @@ function gserv.SteamCMD(args)
 
 		local arg_str = {}
 
-		for k,v in pairs(args) do
+		for _, kv in pairs(args) do
+			local k,v = next(kv)
 			local s = "+" .. k
 			if v ~= true then
 				s = s .. " " .. v
@@ -74,6 +75,8 @@ function gserv.SteamCMD(args)
 		os.execute("chmod +x " .. srcds_dir .. "/linux32/steamcmd")
 
 		repl.OSExecute(srcds_dir .. "steamcmd.sh " .. arg_str)
+
+		return callback.Resolve()
 	end)
 end
 
@@ -89,11 +92,10 @@ function gserv.InstallGame(name, username)
 	llog("installing %s (%s) to %s", name, appid, install_dir)
 
 	return gserv.SteamCMD({
-		login = username or "anonymous",
-		force_install_dir = "\"" .. install_dir .. "\"",
-		app_update = appid,
-		quit = true,
-		validate = true,
+		{login = username or "anonymous"},
+		{force_install_dir = "\"" .. install_dir .. "\""},
+		{app_update = appid .. " validate"},
+		{quit = true},
 	}):Then(function()
 		return callback.Resolve(install_dir, appid, full_name)
 	end)
@@ -211,19 +213,23 @@ do
 	end
 end
 
-function gserv.InstallGMod(where)
+function gserv.InstallGMod(where, force_reinstall)
 	return gserv.InstallGame("gmod dedicated server"):Then(function(dir, appid, full_name)
+		llog("updated gmod dedicated server")
+
 		local location = gserv.GetSRCDSDirectory() .. "gserv/" .. where
 
 		fs.Remove(dir .. "garrysmod/sv.db")
 
-		if not fs.IsFile(location .. "/garrysmod/data/gserv/gserv_installed") then
+		if force_reinstall or not fs.IsFile(location .. "/garrysmod/data/gserv/gserv_installed") then
 			llog("copying files from:")
 			logn("\t" .. dir)
 			logn("\tto")
 			logn("\t" .. location)
 			assert(fs.CopyRecursively(dir, location))
 			fs.Write(location .. "/garrysmod/data/gserv/gserv_installed", "", true)
+		else
+			llog("skipping copying over server files")
 		end
 
 		return callback.Resolve(location)

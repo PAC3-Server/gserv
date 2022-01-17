@@ -175,7 +175,8 @@ event.AddListener("GservWebhook", "update_addons", function(id, tbl)
 			if url:lower() == addon_url:lower() then
 				llog(id .. " - received webhook to update " .. name .. " - " .. addon_url)
 				gserv.UpdateAddon(id, name, info)
-				vfs.Write(gmod_dir .. "data/gserv/server_want_restart.txt", name)
+				-- relies on https://github.com/PAC3-Server/notagain/blob/master/lua/notagain/pac_server/autorun/server/auto_restart.lua
+				vfs.Write(gmod_dir .. "data/server_want_restart.txt", name)
 				return
 			end
 		end
@@ -320,8 +321,8 @@ event.AddListener("GServStop", "gmod_webserver", function(id, gmod_dir)
 	end
 end)
 
-local function setup()
-	gserv.InstallGMod(id):Then(function(location)
+local function setup(force_reinstall)
+	gserv.InstallGMod(id, force_reinstall):Then(function(location)
 		gserv.InstallGServ(location, config)
 		--gserv.InstallGame("Counter-Strike: Source Dedicated Server")
 		--gserv.InstallGame("Team Fortress 2 Dedicated Server")
@@ -357,7 +358,7 @@ commands.Add(id .. " setup", function()
 end)
 
 commands.Add(id .. " update", function()
-	setup()
+	setup(true)
 end)
 
 commands.Add(id .. " list_addons", function()
