@@ -134,7 +134,6 @@ local config = {
 		css_swep_pack = "https://steamcommunity.com/sharedfiles/filedetails/?id=108720350",
 
 		physical_parent = "https://steamcommunity.com/sharedfiles/filedetails/?id=1328566021",
-		epms = "http://steamcommunity.com/sharedfiles/filedetails/?id=504945881",
 		smart_freezer = "http://steamcommunity.com/sharedfiles/filedetails/?id=107388767",
 		improved_polyweld = "http://steamcommunity.com/sharedfiles/filedetails/?id=344795193",
 		total_mass_tool = "http://steamcommunity.com/sharedfiles/filedetails/?id=129425927",
