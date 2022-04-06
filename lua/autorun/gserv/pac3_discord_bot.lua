@@ -1,7 +1,12 @@
 if not DISCORD_BOT then
 	--DISCORD_BOT:Remove()
+	local token = vfs.Read("temp/discord_bot_token")
+	if not token then
+		wlog("missing discord bot token")
+		return
+	end
 	logn("starting discord bot")
-	DISCORD_BOT = DiscordBot(assert(vfs.Read("temp/discord_bot_token"):trim()))
+	DISCORD_BOT = DiscordBot(token:trim())
 end
 
 local server_id = "260866188962168832"

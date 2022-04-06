@@ -51,7 +51,7 @@ function gserv.SteamCMD(args)
 	return resource.Download("http://media.steampowered.com/client/steamcmd_linux.tar.gz"):Then(function(path)
 		local srcds_dir = gserv.GetSRCDSDirectory()
 
-		if not vfs.IsFile(srcds_dir .. "steamcmd.sh") then
+		if not fs.IsFile(srcds_dir .. "steamcmd.sh") or not fs.IsFile(srcds_dir .. "linux32/steamcmd") then
 			vfs.CopyRecursively(path, "os:" .. srcds_dir)
 		end
 
@@ -98,6 +98,8 @@ function gserv.InstallGame(name, username)
 		{quit = true},
 	}):Then(function()
 		return callback.Resolve(install_dir, appid, full_name)
+	end):Catch(function(err) 
+		wlog(err)
 	end)
 end
 
@@ -155,16 +157,18 @@ do
 	local function install_lua(gmod_dir)
 		assert(fs.Write(gmod_dir .. "addons/gserv/lua/autorun/server/gserv.lua", gserv.RenderGLua(), true))
 
-		do			-- override resource.AddFile and resource.AddSingleFile for fastdl
-			local lua = assert(fs.Read(gmod_dir .. "lua/includes/util.lua"))
+		do -- override resource.AddFile and resource.AddSingleFile for fastdl
+			local lua = fs.Read(gmod_dir .. "lua/includes/util.lua")
 
-			lua = lua:gsub("%-%-GSERV_INJECT_START.-%-%-GSERV_INJECT_STOP", "")
+			if lua then
+				lua = lua:gsub("%-%-GSERV_INJECT_START.-%-%-GSERV_INJECT_STOP", "")
 
-			lua = lua .. "--GSERV_INJECT_START\n"
-			lua = lua .. gserv.RenderPreloadedGLua()
-			lua = lua .. "--GSERV_INJECT_STOP"
+				lua = lua .. "--GSERV_INJECT_START\n"
+				lua = lua .. gserv.RenderPreloadedGLua()
+				lua = lua .. "--GSERV_INJECT_STOP"
 
-			assert(fs.Write(gmod_dir .. "lua/includes/util.lua", lua))
+				assert(fs.Write(gmod_dir .. "lua/includes/util.lua", lua, true))
+			end
 		end
 	end
 
@@ -186,8 +190,8 @@ do
 		mounts_cfg = mounts_cfg .. "}"
 		mountdepots_txt = mountdepots_txt .. "}"
 
-		assert(fs.Write(gmod_dir .. "cfg/mount.cfg", mounts_cfg))
-		assert(fs.Write(gmod_dir .. "cfg/mountdepots.txt", mountdepots_txt))
+		assert(fs.Write(gmod_dir .. "cfg/mount.cfg", mounts_cfg, true))
+		assert(fs.Write(gmod_dir .. "cfg/mountdepots.txt", mountdepots_txt, true))
 	end
 
 	local function build_cfg(gmod_dir, config)
@@ -195,13 +199,13 @@ do
 		for k,v in pairs(config.cfg) do
 			str = str .. k .. " " .. v .. "\n"
 		end
-		assert(fs.Write(gmod_dir .. "cfg/gserv.cfg", str))
+		assert(fs.Write(gmod_dir .. "cfg/gserv.cfg", str, true))
 
 		-- silence some startup errors
-		assert(fs.Write(gmod_dir .. "cfg/server.cfg", "exec gserv.cfg\n"))
-		assert(fs.Write(gmod_dir .. "cfg/trusted_keys_base.txt", "trusted_key_list\n{\n}\n"))
-		assert(fs.Write(gmod_dir .. "cfg/pure_server_minimal.txt", "whitelist\n{\n}\n"))
-		assert(fs.Write(gmod_dir .. "cfg/network.cfg", ""))
+		assert(fs.Write(gmod_dir .. "cfg/server.cfg", "exec gserv.cfg\n", true))
+		assert(fs.Write(gmod_dir .. "cfg/trusted_keys_base.txt", "trusted_key_list\n{\n}\n", true))
+		assert(fs.Write(gmod_dir .. "cfg/pure_server_minimal.txt", "whitelist\n{\n}\n", true))
+		assert(fs.Write(gmod_dir .. "cfg/network.cfg", "", true))
 	end
 
 	function gserv.InstallGServ(location, config)
