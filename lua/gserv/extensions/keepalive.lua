@@ -9,7 +9,7 @@ gserv.AddGLua("keepalive", [[
 local no_response
 
 event.AddListener("GServStart", "gserv_keepalive", function(id, gmod_dir, config)
-    event.Timer("gserv_keepalive_" .. id, 1, 0, function()
+    timer.Repeat("gserv_keepalive_" .. id, 1, 0, function()
         local time = fs.Read(gmod_dir .. "data/gserv/last_ping.txt")
 
         if not time then
@@ -39,7 +39,7 @@ event.AddListener("GServStart", "gserv_keepalive", function(id, gmod_dir, config
 end)
 
 event.AddListener("GServStop", "gserv_keepalive", function(id, gmod_dir)
-    event.RemoveTimer("gserv_keepalive_" .. id)
+    timer.RemoveTimer("gserv_keepalive_" .. id)
     fs.Remove(gmod_dir .. "data/gserv/pinger.txt")
 end)
 

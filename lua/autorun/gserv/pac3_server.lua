@@ -15,7 +15,7 @@ local config = {
 		disableluarefresh = true,
 	},
 	startup = {
-		map = "gm_bluehills_test3",
+		map = "gm_flatgrass",
 		maxplayers = 32,
 	},
 	screenshots = {
@@ -214,7 +214,7 @@ event.AddListener("GServStart", "gmod_webserver", function(id, gmod_dir, config)
 
 	local function client_path(client)
 		local path = client.http.path:sub(2)
-		if path:endswith("/") then
+		if path:ends_with("/") then
 			path = path:sub(1, -2)
 		end
 
@@ -254,7 +254,7 @@ event.AddListener("GServStart", "gmod_webserver", function(id, gmod_dir, config)
 	function GMOD_WEBSERVER:OnReceiveHeader(client, headers)
 		local path = client_path(client)
 
-		if path:startswith("downloadurl") then
+		if path:starts_with("downloadurl") then
 			local url = path:sub(#"downloadurl/" + 1)
 
 			if fs.IsFile(gmod_dir .. "fastdl/" .. url) then
@@ -450,6 +450,7 @@ if gserv.IsRunning(id) then
 	return
 else
 	if not gserv.IsInstalled(4000) then
+		logn("installing srcds gmod 4000")
 		setup()
 	end
 

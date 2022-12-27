@@ -84,7 +84,7 @@ gserv.AddGLua("fastdl", [[
 
 event.AddListener("GServStart", "gserv_fastdl", function(id, gmod_dir, config)
 
-    event.Timer("gserv_fastdl_" .. id, 1, 0, function()
+    timer.Repeat("gserv_fastdl_" .. id, 1, 0, function()
         local paths = serializer.ReadFile("newline", gmod_dir .. "data/gserv/resource_files.txt")
 
         if paths then
@@ -128,7 +128,7 @@ end)
 event.AddListener("GServStop", "gserv_fastdl", function(id)
     local gmod_dir = gserv.GetSRCDSDirectory() .. "gserv/" .. id .. "/garrysmod/"
 
-    event.RemoveTimer("gserv_fastdl_" .. id)
+    timer.RemoveTimer("gserv_fastdl_" .. id)
     fs.Remove(gmod_dir .. "data/gserv/resource_files.txt")
 end)
 

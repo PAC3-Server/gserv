@@ -71,9 +71,9 @@ function gserv.SteamCMD(args)
 		llog(arg_str)
 
 		-- todo
-		os.execute("chmod +x " .. srcds_dir .. "steamcmd.sh")
-		os.execute("chmod +x " .. srcds_dir .. "/linux32/steamcmd")
-
+		print("WTF", os.execute("chmod +x " .. srcds_dir .. "steamcmd.sh"))
+		print("WTF", os.execute("chmod +x " .. srcds_dir .. "/linux32/steamcmd"))
+		print("wtf", os.execute("stat /app/storage/shared/srcds2/linux32/steamcmd"))
 		repl.OSExecute(srcds_dir .. "steamcmd.sh " .. arg_str)
 
 		return callback.Resolve()
@@ -261,7 +261,7 @@ function gserv.NormalizeAddonInfo(val)
 	local info = {}
 
 	if type(val) == "string" then
-		if val:endswith(".git") then
+		if val:ends_with(".git") then
 			info.type = "git"
 		else
 			info.type = "workshop"
@@ -444,7 +444,7 @@ do -- tmux and runtime related
 			end
 
 			current = gserv.GetOutput(id)
-		until current:endswith(end_line)
+		until current:ends_with(end_line)
 
 		local res = current:sub(#prev + #str + 1):sub(2, -#end_line - 2)
 

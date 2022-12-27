@@ -47,9 +47,9 @@ function META:CreateWebsocket(opcodes, friendly_name, on_close)
 		if data.opcode == "Hello" then
 			self:SendHeartbeat(os.clock())
 			local id = tostring(self)
-			event.Timer(id, (data.d.heartbeat_interval/1000) * 0.75, function()
+			timer.Repeat(id, (data.d.heartbeat_interval/1000) * 0.75, function()
 				if not self:IsValid() then
-					event.RemoveTimer(id)
+					timer.RemoveTimer(id)
 					return
 				end
 
@@ -69,7 +69,7 @@ function META:CreateWebsocket(opcodes, friendly_name, on_close)
     end
 
 	function socket:OnClose(reason, code)
-		event.RemoveTimer(tostring(self)
+		timer.RemoveTimer(tostring(self)
 	)
         self:Remove()
 

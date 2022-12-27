@@ -156,7 +156,7 @@ local ffi = require("ffi")
 local freeimage = require("freeimage")
 
 function DISCORD_BOT:Say2(channel, msg)
-	local discord_message = msg:startswith("__DISCORD_MESSAGE__")
+	local discord_message = msg:starts_with("__DISCORD_MESSAGE__")
 	if discord_message then
 		msg = msg:sub(#"__DISCORD_MESSAGE__" + 1)
 	end
@@ -368,7 +368,7 @@ function DISCORD_BOT:OnEvent(data)
 					cmd = data.d.content:match("^!(%S+)")
 				end
 
-                if data.d.member and table.hasvalue(data.d.member.roles, ADMIN_ROLE) and data.d.content:startswith("!") then
+                if data.d.member and table.hasvalue(data.d.member.roles, ADMIN_ROLE) and data.d.content:starts_with("!") then
 
 					do
 						local captured = ""
