@@ -1,0 +1,1 @@
+os.execute("docker run --mount type=bind,source="..fs.get_current_directory().."/storage/,target=/home/gserv/storage -it -t goluwa-srcds")

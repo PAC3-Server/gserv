@@ -321,7 +321,7 @@ event.AddListener("GServStop", "gmod_webserver", function(id, gmod_dir)
 end)
 
 local function setup(force_reinstall)
-	gserv.InstallGMod(id, force_reinstall):Then(function(location)
+	return gserv.InstallGMod(id, force_reinstall):Then(function(location)
 		gserv.InstallGServ(location, config)
 		--gserv.InstallGame("Counter-Strike: Source Dedicated Server")
 		--gserv.InstallGame("Team Fortress 2 Dedicated Server")
@@ -449,13 +449,19 @@ if gserv.IsRunning(id) then
 	gserv.Resume(id, config)
 	return
 else
-	if not gserv.IsInstalled(4000) then
-		logn("installing srcds gmod 4000")
-		setup()
+	local function start()
+		remove_unknown_addons()
+
+		gserv.InstallGServ(gmod_dir, config)
+		gserv.Start(id, config)
 	end
 
-	remove_unknown_addons()
-
-	gserv.InstallGServ(gmod_dir, config)
-	gserv.Start(id, config)
+	if not gserv.IsInstalled(4000) then
+		logn("installing srcds gmod 4000")
+		setup():Then(function()
+			start()
+		end)
+	else
+		start()
+	end
 end

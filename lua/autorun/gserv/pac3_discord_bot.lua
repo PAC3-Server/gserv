@@ -2,10 +2,12 @@ if not DISCORD_BOT then
 	--DISCORD_BOT:Remove()
 	local token = vfs.Read("temp/discord_bot_token")
 	if not token then
-		wlog("missing discord bot token")
+		wlog("temp/discord_bot_token is missing, can't start discord bot")
 		return
 	end
 	logn("starting discord bot")
+	token = token:trim()
+	assert(#token == 70, "invalid token length")
 	DISCORD_BOT = DiscordBot(token:trim())
 end
 
@@ -20,7 +22,7 @@ local function restart()
 		DISCORD_BOT = nil
 	end
 
-	event.Delay(1, function()
+	timer.Delay(1, function()
 		runfile("lua/autorun/gserv/pac3_discord_bot.lua")
 	end)
 end
@@ -231,6 +233,7 @@ function DISCORD_BOT:SendImage(pixels, w,h, channel)
 end
 
 function DISCORD_BOT:Say(channel, what)
+	print(channel, what)
 	self.api.POST("channels/"..channel.."/messages", {
 		body = {
 			content = what:sub(0, 1999),
@@ -239,7 +242,6 @@ function DISCORD_BOT:Say(channel, what)
 end
 
 function DISCORD_BOT:OnEvent(data)
-
 	if data.t == "VOICE_SERVER_UPDATE" then
 		self.voice_server = data
 	elseif data.t == "VOICE_STATE_UPDATE" then
@@ -368,7 +370,7 @@ function DISCORD_BOT:OnEvent(data)
 					cmd = data.d.content:match("^!(%S+)")
 				end
 
-                if data.d.member and table.hasvalue(data.d.member.roles, ADMIN_ROLE) and data.d.content:starts_with("!") then
+                if data.d.member and list.has_value(data.d.member.roles, ADMIN_ROLE) and data.d.content:starts_with("!") then
 
 					do
 						local captured = ""
@@ -378,7 +380,7 @@ function DISCORD_BOT:OnEvent(data)
 
 						commands.RunString(data.d.content)
 
-						event.Delay(0, function()
+						timer.Delay(0, function()
 							self:Say2(data.d.channel_id, captured)
 							event.RemoveListener("ReplPrint", "capture")
 						end)
