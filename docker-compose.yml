@@ -1,0 +1,13 @@
+#  sudo rm -rf storage/ && docker compose up
+
+version: '3.3'
+services:
+  rspec:
+    image: goluwa-srcds
+    environment:
+      - USER=gserv
+      - GOLUWA_AUDIO_DEVICE=loopback
+      - DISCORD_BOT_TOKEN=nope
+    user: root
+    volumes:
+      - ./storage:/goluwa/storage

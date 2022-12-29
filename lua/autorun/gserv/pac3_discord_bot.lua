@@ -1,13 +1,13 @@
 if not DISCORD_BOT then
 	--DISCORD_BOT:Remove()
-	local token = vfs.Read("temp/discord_bot_token")
+	local token = os.getenv("DISCORD_BOT_TOKEN")
 	if not token then
-		wlog("temp/discord_bot_token is missing, can't start discord bot")
+		wlog("env variable DISCORD_BOT_TOKEN is missing, can't start discord bot")
 		return
 	end
-	logn("starting discord bot")
 	token = token:trim()
 	assert(#token == 70, "invalid token length")
+	logn("starting discord bot")
 	DISCORD_BOT = DiscordBot(token:trim())
 end
 
@@ -148,7 +148,7 @@ local function start_voicechat(self)
 
 	--	elapsed = elapsed + FRAME_DURATION/1000
 	--	local delay = elapsed - (system.GetTime() - start)
-	--	event.Delay(delay, encode)
+	--	timer.Delay(delay, encode)
 	end)
 	--encode()
 end
@@ -166,7 +166,7 @@ function DISCORD_BOT:Say2(channel, msg)
 	local i = 0
 
 	local function send(str)
-		event.Delay(i, function()
+		timer.Delay(i, function()
 			if discord_message then
 				self:Say(channel, str)
 			else
@@ -322,7 +322,7 @@ function DISCORD_BOT:OnEvent(data)
 				if data.opcode == "SessionDescription" then
 					self.secret_key = data.d.secret_key
 
-					--start_voicechat(self)
+					start_voicechat(self)
 					bot:Say(chatsounds_channel, "win2000 startup")
 				end
 			end

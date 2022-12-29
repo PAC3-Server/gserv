@@ -6,36 +6,28 @@
 -- ./goluwa --cli --l "runfile('lua/run_docker.lua')"
 -- ./goluwa --cli --l "runfile('lua/build_docker_runtime.lua')"
 
-assert(system.OSCommandExists("id"), "id command must exist")
-
-local user_id = io.popen("id -u"):read("*l")
-local group_id = io.popen("id -g"):read("*l")
-local user_name = io.popen("id -u --name"):read("*l")
-
 local docker_file = ffibuild.GetDefaultDockerHeader() .. [[
     EXPOSE 27015/udp
     EXPOSE 27015/tcp
     EXPOSE 5000/tcp
 
-    RUN apt-get install git wget tmux lib32gcc-s1 lib32stdc++6 -y
+    RUN apt-get install git wget tmux lib32gcc-s1 lib32stdc++6 libopus0 libsodium23 -y
 
-    RUN useradd -ms /bin/bash gserv
-    USER gserv
-    WORKDIR /home/gserv
+    workdir /goluwa
 
-    COPY --chown=gserv core core
-    COPY --chown=gserv framework framework
-    COPY --chown=gserv engine engine
-    COPY --chown=gserv game game
-    COPY --chown=gserv gserv gserv
-    
-    COPY --chown=gserv goluwa goluwa
+    COPY core core
+    COPY framework framework
+    COPY engine engine
+    COPY game game
+    COPY gserv gserv
+
+    COPY goluwa goluwa
+
+    RUN cp /lib/x86_64-linux-gnu/libsodium.so.23 framework/bin/linux_x64/libsodium.so
+    RUN cp /lib/x86_64-linux-gnu/libopus.so.0 framework/bin/linux_x64/libopus.so
 
     RUN touch core/bin/linux_x64/keep_local_binaries
     RUN touch framework/bin/linux_x64/keep_local_binaries
-
-    ENV USER=gserv
-    ENV GOLUWA_AUDIO_DEVICE=loopback
 
     ENTRYPOINT [ "./goluwa" ]
 ]]

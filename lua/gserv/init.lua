@@ -70,10 +70,8 @@ function gserv.SteamCMD(args)
 
 		llog(arg_str)
 
-		-- todo
-		print("WTF", os.execute("chmod +x " .. srcds_dir .. "steamcmd.sh"))
-		print("WTF", os.execute("chmod +x " .. srcds_dir .. "/linux32/steamcmd"))
-		print("wtf", os.execute("stat /app/storage/shared/srcds2/linux32/steamcmd"))
+		os.execute("chmod +x " .. srcds_dir .. "steamcmd.sh")
+		os.execute("chmod +x " .. srcds_dir .. "/linux32/steamcmd")
 		repl.OSExecute(srcds_dir .. "steamcmd.sh " .. arg_str)
 
 		return callback.Resolve()
